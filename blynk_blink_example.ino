@@ -38,12 +38,19 @@
 
 #include <SoftwareSerial.h>
 SoftwareSerial SerialBLE(10, 11); // RX, TX
+/*
+When you download fron Blync.cc the code says 
+SoftwareSerial SwSerial(10, 11); // RX, TX
+this is declaring the second serial pins (Serial1) and SwSerial.  In the rest of the code it is reffered to as SerialBLE so I have changed is to 
+SoftwareSerial SerialBLE(10, 11); // RX, TX
+all is working and this has been tested
+*/
 
 #include <BlynkSimpleSerialBLE.h>
 
 // You should get Auth Token in the Blynk App.
 // Go to the Project Settings (nut icon).
-char auth[] = "baF82iBdJdyU9bobBoZcoYkR_aazLneT";
+char auth[] = "Enter Auth Code Here";
 
 
 void setup()
