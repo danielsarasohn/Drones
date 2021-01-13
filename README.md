@@ -2,7 +2,6 @@ This is a work in progress that is not fully assembled yet code will be updated 
 
 
 Car.ino is the car functions
-
 Transmitter.ino is the RF transmitter code
 Reciever.ino is the reciever for the RF
 softSerial_write_naming_bluetooth.ino is for naming the Bluetooth Module check the CIJE textbook for more information on how
