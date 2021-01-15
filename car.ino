@@ -1,90 +1,96 @@
 int val;
-void Speed()
-{
-  val = analogRead(A0);
+const int trigPin = 9; 
+const int echoPin = 10;
+float duration, distance;
+void Speed () {
+  val= analogRead (A0);
   val = map(val, 680, 1023, 0, 255);
 }
-void turningSpeed()
+
+void preauton()
 {
-  analogWrite(3, 255);
-  analogWrite(3, 255);
+  
 }
 void setup() {
   // put your setup code here, to run once:
-
-
-  pinMode(4, OUTPUT); // left wheel
-  pinMode(5, OUTPUT);
-  pinMode(7, OUTPUT); // right wheel
-  pinMode(8, OUTPUT);
-  pinMode(3, OUTPUT); // speed control
-  pinMode(6, OUTPUT);
-  Serial.begin(9600);  
-  analogWrite(3, val);
-  analogWrite(6, val);
+pinMode(4, OUTPUT); // left wheel
+pinMode(5, OUTPUT);
+pinMode(7, OUTPUT); // right wheel
+pinMode(8, OUTPUT);
+pinMode(3, OUTPUT); // speed control
+pinMode(6, OUTPUT);
+pinMode (9, OUTPUT);
+pinMode(10, OUTPUT);
+pinMode(trigPin, OUTPUT); 
+pinMode(echoPin, INPUT); 
+Serial.begin(9600); 
 }
-
-void off () {
-  digitalWrite (5, LOW);
-  digitalWrite (4, LOW);
-  digitalWrite (8, LOW);
-  digitalWrite (7, LOW);
+void off (){
+  for (int x=3; x++; x<11)
+  digitalWrite (x , LOW);       
 }
-void backwards (int x) {
-  Speed();  
-  off();
-  Serial.print("bananab");
-  analogWrite(3, val);
-  analogWrite(6, val);
-  digitalWrite (5, LOW);
-  digitalWrite (4, HIGH);
-  digitalWrite (8, HIGH);
-  digitalWrite (7, LOW);
-  delay(x);
-  off();
+void sense (){
+ digitalWrite(trigPin, LOW); 
+ delayMicroseconds(2); 
+ digitalWrite(trigPin, HIGH); 
+ delayMicroseconds(5); 
+ digitalWrite(trigPin, LOW);
+ duration = pulseIn(echoPin, HIGH); 
+ distance = duration/74/2;
+  Serial.print("Distance: "); 
+ Serial.println(distance); 
 }
-void forwards (int d) {
+void backwards (int b) {
+   off();
   Speed();
-  Serial.print("bananaf");
-  analogWrite(3, val);
-  analogWrite(6, val);
-  off();
-  digitalWrite (4, LOW);
+  analogWrite (3, val);
+  analogWrite (6, val);
   digitalWrite (5, HIGH);
-  digitalWrite (7, LOW);
   digitalWrite (8, HIGH);
-  delay(d);
-  off();
+  delay(b);
 }
-void left() {
-  Serial.print("bananal");
-  turningSpeed();
-  off();
-  digitalWrite (8, LOW);
-  digitalWrite (7, HIGH);
-  digitalWrite (4, LOW);
-  digitalWrite (5, LOW);
-  delay(750);
-  off();
-}
-void right() {
-  turningSpeed();
-  Serial.print("bananar");
-  off();
-  digitalWrite (5, LOW);
+void forwards (int f) {
+   off();
+  Speed();
+  analogWrite (3, val);
+  analogWrite (6,val);
   digitalWrite (4, HIGH);
-  digitalWrite (8, LOW);
-  digitalWrite (7, LOW);
-  delay(750);
-  off();
+  digitalWrite (7, HIGH);
+  delay(f);
+}
+void right (int l) {
+   off();
+  Speed();
+  analogWrite (3, val);
+  analogWrite (6, val);
+  digitalWrite (4, HIGH);
+
+  delay(l);
+ }
+void left (int r){
+    off();
+  Speed();
+  analogWrite (3, val);
+  analogWrite (6, val);
+  digitalWrite (7,HIGH);
+  delay(r);
+}
+void autonomous () {
+sense ();
+if ( distance > 1)
+{
+forwards (1000);
+}
+
+else 
+{ 
+  right (1000); 
+}
+}
+void controler () {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  analogWrite(3, val);
-  analogWrite(6, val);
-  backwards(5000);
-  forwards(5000);
-  left();
-  right();
+  forwards (5000);
 }
+
