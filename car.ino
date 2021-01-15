@@ -1,6 +1,6 @@
 int val;
-const int trigPin = 9; 
-const int echoPin = 10;
+const int trigPin = A2; 
+const int echoPin = A3;
 float duration, distance;
 void Speed () {
   val= analogRead (A0);
