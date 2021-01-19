@@ -10,11 +10,11 @@ long Micros;
 #include <Servo.h>
 Servo myservo1;
 // Length of password + 1 for null character
-#define Password_Length 12
+#define Password_Length 7
 // Character to hold password input
 char Data[Password_Length];
 // Password
-char Master[Password_Length] = "#745837626*";
+char Master[Password_Length] = "12345#";
 
 // Pin connected to led
 int lockOutput = 13;
