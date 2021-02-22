@@ -23,13 +23,7 @@ int rocket[3];
 
 int motorSpeedA = 0;
 int motorSpeedB = 0;
-void off()
-{
-  digitalWrite(in1, LOW);
-  digitalWrite(in4, LOW);
-  digitalWrite(in2, LOW);
-  digitalWrite(in3, LOW);
-}
+
 void setup() {
   pinMode(enA, OUTPUT);
   pinMode(enB, OUTPUT);
@@ -37,25 +31,34 @@ void setup() {
   pinMode(in2, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
-  Serial.begin(9600);
   radio.begin();
   radio.openReadingPipe(1, pipe);
   radio.startListening();
+  radio.setChannel(110);
+  Serial.begin(9600);
 }
-
+void off()
+{
+  digitalWrite (in1, LOW);
+  digitalWrite (in2, LOW);
+  digitalWrite (in3, LOW);
+  digitalWrite (in4, LOW);
+}
 void loop() {
-  const int SW_pin = rocket[0]; // digital pin connected to switch output
-const int xAxis = rocket[1]; // analog pin connected to X output
-const int yAxis = rocket[2]; // analog pin connected to Y output
-  radio.read(rocket, sizeof(rocket));
 
-  if (yAxis < 470) {
+  const int SW_pin = rocket[0]; // digital pin connected to switch output
+  const int xAxis = rocket[1]; // analog pin connected to X output
+  const int yAxis = rocket[2]; // analog pin connected to Y output
+  radio.read(rocket, sizeof(rocket));
+  Serial.print("Switch:  ");
+  Serial.println(rocket[0]);
   Serial.print("X-axis: ");
-  Serial.print(analogRead(xAxis));
-  Serial.print("\n");
+  Serial.println(rocket[1]);
   Serial.print("Y-axis: ");
-  Serial.println(analogRead(yAxis));
+  Serial.println(rocket[2]);
   Serial.print("\n\n");
+  if (yAxis < 470) {
+    off();
     digitalWrite(in1, HIGH);
     digitalWrite(in2, LOW);
 
@@ -66,12 +69,7 @@ const int yAxis = rocket[2]; // analog pin connected to Y output
     motorSpeedB = map(yAxis, 470, 0, 0, 255);
   }
   else if (yAxis > 550) {
-   Serial.print("X-axis: ");
-  Serial.print(analogRead(xAxis));
-  Serial.print("\n");
-  Serial.print("Y-axis: ");
-  Serial.println(analogRead(yAxis));
-  Serial.print("\n\n");
+    off();
     digitalWrite (in1, LOW);
     digitalWrite (in2, HIGH);
     digitalWrite (in3, LOW);
@@ -84,35 +82,51 @@ const int yAxis = rocket[2]; // analog pin connected to Y output
     motorSpeedB = 0;
   }
 
-  if (xAxis < 470) {
+  if (xAxis < 470 && yAxis < 550 || yAxis > 470) {
     int xMapped = map(xAxis, 470, 0, 0, 255);
     motorSpeedA = motorSpeedA - xMapped;
     motorSpeedB = motorSpeedB + xMapped;
-    if (motorSpeedA < 0) {
-      motorSpeedA = 0;
-    }
-    if (motorSpeedB > 255) {
-      motorSpeedB = 255;
-    }
   }
-  if (xAxis > 550) {
+  if (xAxis < 470 && yAxis < 550 && yAxis > 470) {
+    off();
+    int xMapped = map(xAxis, 470, 0, 0, 255);
+    motorSpeedA = xMapped;
+    motorSpeedB = xMapped;
+    digitalWrite(4, HIGH);
+    digitalWrite(8, HIGH);
+  }
+  if (xAxis > 550 && yAxis < 550 && yAxis > 470) {
+    off();
+    int xMapped = map(xAxis, 470, 0, 0, 255);
+    motorSpeedA = xMapped;
+    motorSpeedB = xMapped;
+    digitalWrite(5, HIGH);
+    digitalWrite(7, HIGH);
+  }
+  if (xAxis > 550 && yAxis < 550 || yAxis > 470) {
     int xMapped = map(xAxis, 470, 0, 0, 255);
     motorSpeedA = motorSpeedA + xMapped;
     motorSpeedB = motorSpeedB - xMapped;
 
-    if (motorSpeedA < 0) {
-      motorSpeedA = 0;
-    }
-    if (motorSpeedB > 255) {
-      motorSpeedB = 255;
-    }
+
 
   }
-  if (motorSpeedB < 70) {
+  if (motorSpeedA < 0) {
+    motorSpeedA = 0;
+  }
+  if (motorSpeedA > 255) {
+    motorSpeedA = 255;
+  }
+  if (motorSpeedB < 0) {
     motorSpeedB = 0;
   }
-  if (motorSpeedA < 70) {
+  if (motorSpeedB > 255) {
+    motorSpeedB = 255;
+  }
+  if (!radio.available()) {
     motorSpeedA = 0;
+    motorSpeedB = 0;
+    return;
   }
   analogWrite(enA, motorSpeedA);
   analogWrite(enB, motorSpeedB);
